@@ -19,54 +19,77 @@ public class Shoot {
                     robot.windmillServo.setPower(1);
                 }),
 
-                waitMs(350),
+                waitMs(400),
 
                 instant(() -> {
                     robot.windmillServo.setPower(0);
                     robot.intake.setPower(0);
                 }),
 
-                waitMs(350),
+                waitMs(500),
                 instant(() -> {
                     robot.windmillServo.setPower(1);
                 }),
-                waitMs(350),
+                waitMs(400),
 
                 instant(() -> {
                     robot.windmillServo.setPower(0);
                     robot.intake.setPower(0);
                 }),
 
-                waitMs(350),
+                waitMs(500),
                 instant(() -> {
                     robot.windmillServo.setPower(1);
                 }),
 
-                waitMs(350),
+                waitMs(400),
 
                 instant(() -> {
                     robot.windmillServo.setPower(0);
                     robot.intake.setPower(0);
                 }),
 
-                waitMs(350),
+                waitMs(500),
                 instant(() -> {
                     robot.windmillServo.setPower(1);
                 }),
 
-                waitMs(350),
+                waitMs(400),
 
                 instant(() -> {
                     robot.windmillServo.setPower(0);
                     robot.intake.setPower(0);
                 }),
 
-                waitMs(350),
+                waitMs(500),
                 instant(() -> {
                     robot.windmillServo.setPower(1);
                 }),
 
-                waitMs(350),
+                waitMs(400),
+
+                instant(() -> {
+                    robot.windmillServo.setPower(0);
+                    robot.intake.setPower(0);
+                }),
+
+                waitMs(500),
+                instant(() -> {
+                    robot.windmillServo.setPower(1);
+                }),
+
+                waitMs(400),
+
+                instant(() -> {
+                    robot.windmillServo.setPower(0);
+                    robot.intake.setPower(0);
+                }),
+                waitMs(500),
+                instant(() -> {
+                    robot.windmillServo.setPower(1);
+                }),
+
+                waitMs(400),
 
                 instant(() -> {
                     robot.windmillServo.setPower(0);

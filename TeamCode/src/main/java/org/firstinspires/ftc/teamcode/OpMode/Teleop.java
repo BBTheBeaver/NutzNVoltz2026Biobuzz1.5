@@ -139,7 +139,8 @@ public class Teleop extends OpMode {
                 turnPower = headingController.calculate(0, headingError) + kV * headingVelFF;
             }
         }else {
-            turnPower = isBlue ? gamepad1.right_stick_x :- gamepad1.right_stick_x;
+            turnPower = gamepad1.right_stick_x;
+                    //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
         }
 
         double flip = isBlue ? 1 : -1;

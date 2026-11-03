@@ -8,7 +8,7 @@ public class Poses {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
     //Pose reset
-    public static final Pose BLUE_RESET = poseFactory.of(132, 132, 270);
+    public static final Pose BLUE_RESET = poseFactory.of(130, 132, 270);
     public static final Pose RED_RESET = poseFactory.of(10, 10, 90);
 
 
@@ -18,7 +18,7 @@ public class Poses {
     //Small solo sequence
     public static final Pose SOLO_FLOWER = poseFactory.of(22.4071, 47.1358, 180);
     public static final Pose SOLO_FLOWERCURVE = poseFactory.of(29.9019, 47.9481, 0);
-    public static final Pose SOLO_ATFLOWER = poseFactory.of(14, 47.1472, 180);
+    public static final Pose SOLO_ATFLOWER = poseFactory.of(13, 47.1472, 180);
     public static final Pose SOLO_SHOOT = poseFactory.of(61.4057, 131.2094, 90);
     public static final Pose SOLO_SHOOTCURVE1 = poseFactory.of(35.4584, 24.7886, 0);
     public static final Pose SOLO_SHOOTCURVE2 = poseFactory.of(1.5351, 107.8854, 0);

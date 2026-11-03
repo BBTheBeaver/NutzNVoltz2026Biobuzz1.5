@@ -50,7 +50,7 @@ public class FarAuto implements AutoRoutine{
         return deadline(
              sequential(
 
-                    waitMs(10000),
+                    waitMs(7000),
                     Shoot.create(robot),
 
                     parallel(
@@ -69,8 +69,8 @@ public class FarAuto implements AutoRoutine{
                     ),
 
                      instant(intake::turnOn),
-                     waitMs(2000),
-                     instant(intake::stop),
+                     waitMs(1400),
+
 
 
                     parallel(
@@ -82,6 +82,7 @@ public class FarAuto implements AutoRoutine{
                     ),
 
                     Shoot.create(robot),
+                     instant(intake::stop),
 
                     follow(robot.follower, PARK())
             ),
