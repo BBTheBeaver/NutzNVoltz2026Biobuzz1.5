@@ -17,10 +17,7 @@ public class Flywheel {
         motor.setVelocity(LAUNCHER_TARGET_VELOCITY);
     }
 
-    // Checks whether the flywheel is ready to shoot
-    public boolean isAtSpeed() {
-        return motor.getVelocity() >= LAUNCHER_MIN_VELOCITY;
-    }
+    // Checks whether the flywheel is ready to shoo
 
     // Stops the flywheel
     public void stop() {

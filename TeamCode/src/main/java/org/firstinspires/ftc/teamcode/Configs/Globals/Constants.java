@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Configs.Globals;
 
 public class Constants {
 
+    public static final int LAUNCHER_TARGET_VELOCITY = 1140;
+
     public static final double INTAKE_FORWARD = 1.0;
     public static final double INTAKE_REVERSE = -1.0;
 

@@ -208,6 +208,7 @@ public class Teleop extends OpMode {
 
         // Telemetry
         telemetry.addData("Shooter RPM: ", robot.launcher.getVelocity());
+        telemetry.addData("Distance from goal: ", distanceToGoal);
         telemetry.addData("X Pose: ", robot.follower.pose().x());
         telemetry.addData("Y Pose: ", robot.follower.pose().y());
         telemetry.addData("Triggers", "left (%.2f), right (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
