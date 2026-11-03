@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 public class FarAuto implements AutoRoutine{
@@ -102,6 +103,9 @@ public class FarAuto implements AutoRoutine{
         return curve(m(FAR_FLOWER), m(FAR_SHOOTCURVE), m(FAR_SHOOT)).linear(m(FAR_FLOWER), m(FAR_SHOOT));
     }
     private Path PARK(){
-        return curve(m(FAR_SHOOT), m(FAR_PARKCURVE), m(FAR_PARK)).linear(m(FAR_SHOOT), m(FAR_PARK));
+        if (AutoConfig.parkTop) {
+            return curve(m(FAR_SHOOT), m(FAR_PARKCURVE), m(FAR_PARKTOP)).linear(m(FAR_SHOOT), m(FAR_PARKTOP));
+        }
+        return curve(m(FAR_SHOOT), m(FAR_PARKCURVE), m(FAR_PARKBOTTOM)).linear(m(FAR_SHOOT), m(FAR_PARKBOTTOM));
     }
 }

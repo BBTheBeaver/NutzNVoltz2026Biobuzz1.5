@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 
@@ -55,9 +56,11 @@ public class ParkAuto implements AutoRoutine {
                 follow(robot.follower, PARK())
         );
     }
-
-    private Path PARK() {
-        return line(m(PARK_START), m(PARK_PARK)).constant(PARK_START);
+    private Path PARK(){
+        if (AutoConfig.parkTop) {
+            return line(m(PARK_START), m(PARK_PARK)).constant(m(PARK_START));
+        }
+        return line(m(PARK_START), m(PARK_PARKBOTTOM)).constant(m(PARK_PARKBOTTOM));
     }
 }
 
