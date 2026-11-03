@@ -11,6 +11,7 @@ import com.pedropathing.controllers.PIDController;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
+import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterTable;
 
 import java.util.Objects;
 
@@ -91,7 +92,7 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
 
         if(gamepad2.dpad_down){
             if(isBlue){
@@ -109,28 +110,22 @@ public class Teleop extends OpMode {
             goalPose[1] = 47.0;
         }
 
+        // right after the goalPose[1] = 97 / 47 block, before the heading lock section
+        double dx = goalPose[0] - robot.follower.pose().x();
+        double dy = goalPose[1] - robot.follower.pose().y();
+        distanceToGoal = Math.hypot(dx, dy);
 
-        if (gamepad1.rightTriggerWasPressed()){
-            otherSide = !otherSide;
-        }
         // ── RightBumper — toggle heading lock ──────────────────────────────────────
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
         double turnPower;
         if(headingLock) {
-            double dx;
-            double dy;
-
-            dx = goalPose[0] - robot.follower.pose().x();
-            dy = goalPose[1] - robot.follower.pose().y();
-
             double kV = -0.75; // start here, tune sign/magnitude by watching behavior while strafing
             double denom = dx * dx + dy * dy;
             double headingVelFF = denom > 1e-6
                     ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
                     : 0;
-            distanceToGoal = Math.hypot(dx, dy);
             headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
             headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
             if (Math.abs(headingError) < Math.toRadians(1)) {
@@ -212,10 +207,11 @@ public class Teleop extends OpMode {
         }
 
         // Telemetry
-        telemetry.addData("Heading Error (deg)", Math.toDegrees(headingError));
+        telemetry.addData("Shooter RPM: ", robot.launcher.getVelocity());
         telemetry.addData("X Pose: ", robot.follower.pose().x());
         telemetry.addData("Y Pose: ", robot.follower.pose().y());
         telemetry.addData("Triggers", "left (%.2f), right (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
+        telemetry.addData("Heading Error (deg)", Math.toDegrees(headingError));
         telemetry.addData("Heading", "%.1f°", Math.toDegrees(robot.follower.pose().heading()));
         telemetry.addData("Loop Hz", robot.getLoopTimeHz());
         telemetry.update();

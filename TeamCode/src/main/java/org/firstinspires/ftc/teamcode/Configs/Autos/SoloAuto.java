@@ -99,10 +99,6 @@ public class SoloAuto implements AutoRoutine {
         return curve(m(SOLO_FLOWER), m(SOLO_SHOOTCURVE1), m(SOLO_SHOOTCURVE2), m(SOLO_SHOOTCURVE3), m(SOLO_SHOOT)).linear(m(SOLO_ATFLOWER), m(SOLO_SHOOT));
     }
 
-    private Path PARK() {
-        return curve(m(SOLO_SHOOT), m(SOLO_PARKCURVE), m(SOLO_PARK)).linear(m(SOLO_SHOOT), m(SOLO_PARK));
-    }
-
     private Path PARK(){
         if (AutoConfig.parkTop) {
             return curve(m(SOLO_SHOOT), m(SOLO_PARKCURVE), m(SOLO_PARK)).linear(m(SOLO_SHOOT), m(SOLO_PARK));
