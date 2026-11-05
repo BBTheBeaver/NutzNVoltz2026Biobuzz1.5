@@ -8,25 +8,44 @@ import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetIntake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetRamp;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.Shoot;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
-public class SoloAuto implements AutoRoutine {
+public class SoloAuto implements AutoRoutine{
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(61.5178, 8, 270);
+    private final Pose path1 = poseFactory.of(13.3653, 46.747, 180);
+    private final Pose path1Control1 = poseFactory.of(34.2421, 51.0813, 0);
+    private final Pose point2Start = poseFactory.of(13.3653, 46.747, 180);
+    private final Pose point2 = poseFactory.of(61.2836, 132.4523, 90);
+    private final Pose point2Control1 = poseFactory.of(13.7852, 68.8159, 0);
+    private final Pose point2Control2 = poseFactory.of(26.6902, 90.2806, 0);
+    private final Pose point3 = poseFactory.of(47.0991, 128.9614, 90);
+    private final Pose point3Control1 = poseFactory.of(58.51, 115.7, 0);
+    private final Pose point4 = poseFactory.of(61.28, 132.45, 90);
+    private final Pose point4Control1 = poseFactory.of(58.5, 115.7, 0);
+    private final Pose point5Start = poseFactory.of(61.28, 132.45, 90);
+    private final Pose point5Top = poseFactory.of(11.7906, 121.9295, 180);
+    private final Pose point5Bottom = poseFactory.of(11.7906, 90, 180);
+    private final Pose point5Control1 = poseFactory.of(65.1446, 116.9032, 0);
+
     private final boolean blue;
     public SoloAuto(boolean blue) {
         this.blue = blue;
@@ -39,75 +58,76 @@ public class SoloAuto implements AutoRoutine {
     }
     @Override
     public Pose getStartPose() {
-        return m(SOLO_START);
+        return m(start);
     }
 
     @Override
     public Command build(Robot robot) {
         Flywheel flywheel = new Flywheel(robot.launcher);
         Intake intake = new Intake(robot.intake);
-        Ramp ramp = new Ramp(robot.right_flower, robot.left_flower);
-
+        Ramp ramp = new Ramp(robot.left_flower, robot.right_flower);
+        Transfer transfer = new Transfer(robot.transfer);
         return deadline(
                 sequential(
-                        waitMs(2000),
-                        Shoot.create(robot),
-
-
-
-                        parallel(
-                                SetIntake.create(intake, robot, false),
-                                follow(robot.follower, FLOWER())
-                        ),
-
-                        instant(intake::turnOn),
-                        SetRamp.down(ramp),
-                        waitMs(500),
-
-                        parallel(
-                                SetIntake.create(intake, robot, false),
-                                follow(robot.follower, ATFLOWER())
-
-                        ),
-
-                        instant(intake::turnOn),
-                        waitMs(2000),
-
-                        parallel(
-                                follow(robot.follower, SHOOT()),
-                                SetRamp.up(ramp)
-                        ),
                         waitMs(500),
                         Shoot.create(robot),
 
+                        parallel(
+                                instant(intake::on),
+                                follow(robot.follower, path1()),
+                                sequential(
+                                        waitMs(1850),
+                                        SetRamp.down(ramp)
+                                )
+                        ),
+
+                        SetRamp.up(ramp),
+                        follow(robot.follower, path2()),
+                        Shoot.create(robot),
+
+                        parallel(
+                                instant(intake::on),
+                                follow(robot.follower, path3()),
+                                sequential(
+                                        waitMs(1000),
+                                        SetRamp.down(ramp)
+                                )
+                        ),
+
+                        SetRamp.up(ramp),
+                        follow(robot.follower, path4()),
+                        Shoot.create(robot),
                         instant(intake::stop),
-                        follow(robot.follower, PARK())
+
+                        follow(robot.follower, path5())
 
                 ),
                 SpinFlywheel.create(flywheel)
         );
     }
 
-    private Path FLOWER() {
-        return curve(m(SOLO_START), m(SOLO_FLOWERCURVE), m(SOLO_FLOWER)).linear(m(SOLO_START), m(SOLO_FLOWER));
+    public Path path1() {
+        return Paths.curve(m(start), m(path1Control1), m(path1)).linear(m(start), m(path1));
     }
 
-    private Path ATFLOWER(){
-        return line(m(SOLO_FLOWER), m(SOLO_ATFLOWER)).linear(m(SOLO_FLOWER), m(SOLO_ATFLOWER));
-    }
-    private Path SHOOT() {
-        return curve(m(SOLO_FLOWER), m(SOLO_SHOOTCURVE1), m(SOLO_SHOOTCURVE2), m(SOLO_SHOOTCURVE3), m(SOLO_SHOOT)).linear(m(SOLO_ATFLOWER), m(SOLO_SHOOT));
+    public Path path2() {
+        return Paths.curve(m(point2Start), m(point2Control1), m(point2Control2), m(point2))
+                .linear(m(point2Start), m(point2));
     }
 
-    private Path PARK() {
-        return curve(m(SOLO_SHOOT), m(SOLO_PARKCURVE), m(SOLO_PARK)).linear(m(SOLO_SHOOT), m(SOLO_PARK));
+    public Path path3() {
+        return Paths.curve(m(point2), m(point3Control1), m(point3)).constant(m(point3));
     }
 
-    private Path PARK(){
+    public Path path4() {
+        return Paths.curve(m(point3), m(point4Control1), m(point4)).constant(m(point4));
+    }
+
+    public Path path5() {
         if (AutoConfig.parkTop) {
-            return curve(m(SOLO_SHOOT), m(SOLO_PARKCURVE), m(SOLO_PARK)).linear(m(SOLO_SHOOT), m(SOLO_PARK));
+            return Paths.curve(point5Start, point5Control1, point5Top).linear(point5Start, point5Top);
         }
-        return curve(m(SOLO_SHOOT), m(SOLO_PARKCURVE), m(SOLO_PARKBOTTOM)).linear(m(SOLO_SHOOT), m(SOLO_PARKBOTTOM));
+        return curve(m(point5Start), m(point5Control1), m(point5Bottom)).linear(m(point5Start), m(point5Bottom));
     }
 }
 

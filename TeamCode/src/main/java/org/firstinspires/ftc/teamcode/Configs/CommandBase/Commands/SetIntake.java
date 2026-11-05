@@ -7,20 +7,23 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import com.pedropathing.ivy.Command;
 
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 public class SetIntake {
 
-    public static Command create(Intake intake, Robot robot, boolean reverse) {
+    public static Command create(Intake intake, Robot robot, Transfer transfer, boolean reverse) {
         return sequential(
                 instant(() -> {
                     if (reverse) {
-                        intake.turnOnReverse();
+                        intake.reverse();
+                        transfer.off();
                         //robot.leftIntakeServo.setPower(1);
                         //robot.rightIntakeServo.setPower(1);
                     } else {
-                        intake.turnOn();
+                        intake.on();
+                        transfer.on();
                         //.leftIntakeServo.setPower(-1);
                         //.rightIntakeServo.setPower(-1);
                     }

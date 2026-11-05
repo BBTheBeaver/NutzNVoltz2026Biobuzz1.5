@@ -8,8 +8,8 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.paths.interpolator.Interpolator.linear;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
@@ -28,6 +28,12 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 public class ParkAuto implements AutoRoutine {
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(9.2829, 132.4562, 90);
+    private final Pose path1Top = poseFactory.of(12.5936, 119.3795, 270);
+    private final Pose path1Bottom = poseFactory.of(12.5936, 90, 270);
     private final boolean blue;
 
     public ParkAuto(boolean blue) {
@@ -43,7 +49,7 @@ public class ParkAuto implements AutoRoutine {
 
     @Override
     public Pose getStartPose() {
-        return m(PARK_START);
+        return m(start);
     }
 
 
@@ -53,14 +59,14 @@ public class ParkAuto implements AutoRoutine {
         Intake intake = new Intake(robot.intake);
         Ramp ramp = new Ramp(robot.right_flower, robot.left_flower);
         return sequential(
-                follow(robot.follower, PARK())
+                follow(robot.follower, Path1())
         );
     }
-    private Path PARK(){
+    private Path Path1(){
         if (AutoConfig.parkTop) {
-            return line(m(PARK_START), m(PARK_PARK)).constant(m(PARK_START));
+            return Paths.curve(start, path1Top, path1Top).linear(start, path1Top);
         }
-        return line(m(PARK_START), m(PARK_PARKBOTTOM)).constant(m(PARK_PARKBOTTOM));
+        return curve(m(start), m(path1Top), m(path1Bottom)).linear(m(start), m(path1Bottom));
     }
 }
 

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
@@ -11,6 +10,7 @@ import com.pedropathing.controllers.PIDController;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
+import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterTable;
 
 import java.util.Objects;
 
@@ -91,7 +91,7 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
 
         if(gamepad2.dpad_down){
             if(isBlue){
@@ -175,7 +175,7 @@ public class Teleop extends OpMode {
             //robot.rightIntakeServo.setPower(INTAKE_FORWARD);
         } else if (reverseOn) {
             robot.intake.setPower(INTAKE_REVERSE);
-            robot.windmillServo.setPower(INTAKE_REVERSE);
+            robot.transfer.setPower(INTAKE_REVERSE);
             //robot.leftIntakeServo.setPower(INTAKE_REVERSE);
             //robot.rightIntakeServo.setPower(INTAKE_REVERSE);
         } else {
@@ -204,10 +204,12 @@ public class Teleop extends OpMode {
 
 
         if (gamepad1.y) {
-            robot.windmillServo.setPower(1);
+            robot.transfer.setPower(1);
+            robot.gate.setPosition(1);
             robot.intake.setPower(INTAKE_FORWARD);
         } else {
-            robot.windmillServo.setPower(0);
+            robot.transfer.setPower(0);
+            robot.gate.setPosition(1);
         }
 
         // Telemetry

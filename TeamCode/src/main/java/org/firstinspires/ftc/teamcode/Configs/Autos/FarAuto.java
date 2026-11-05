@@ -8,8 +8,8 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.paths.interpolator.Interpolator.linear;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
@@ -22,12 +22,25 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 public class FarAuto implements AutoRoutine{
 
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(61.1499, 132.4562, 90);
+    private final Pose path1 = poseFactory.of(47.049, 128.9437, 90);
+    private final Pose path1Control1 = poseFactory.of(54.0127, 120.6964, 0);
+    private final Pose point2 = poseFactory.of(61, 132.5, 90);
+    private final Pose point2Control1 = poseFactory.of(54.01, 120.7, 0);
+    private final Pose point3Top = poseFactory.of(12.425, 122.4423, 180);
+    private final Pose point3Bottom = poseFactory.of(12.425, 90, 180);
+    private final Pose point3Control1 = poseFactory.of(70.8566, 119.4897, 0);
+
     private final boolean blue;
     public FarAuto(boolean blue) {
         this.blue = blue;
@@ -40,7 +53,7 @@ public class FarAuto implements AutoRoutine{
     }
     @Override
     public Pose getStartPose() {
-        return m(FAR_START);
+        return m(start);
     }
 
     @Override
@@ -48,63 +61,46 @@ public class FarAuto implements AutoRoutine{
         Flywheel flywheel = new Flywheel(robot.launcher);
         Intake intake = new Intake(robot.intake);
         Ramp ramp = new Ramp(robot.left_flower, robot.right_flower);
+        Transfer transfer = new Transfer(robot.transfer);
         return deadline(
              sequential(
+                     waitMs(8000),
+                     Shoot.create(robot),
 
-                    waitMs(10000),
-                    Shoot.create(robot),
+                     parallel(
+                             instant(intake::on),
+                             follow(robot.follower, path1()),
+                             sequential(
+                                     waitMs(500),
+                                     SetRamp.down(ramp)
+                             )
+                     ),
 
-                    parallel(
-                            SetIntake.create(intake, robot, false),
-                            follow(robot.follower, FLOWER())
-                    ),
-
-                     instant(intake::turnOn),
-                     SetRamp.down(ramp),
-                     waitMs(500),
-
-
-                    parallel(
-                            SetIntake.create(intake, robot, false),
-                            follow(robot.follower, ATFLOWER())
-                    ),
-
-                     instant(intake::turnOn),
-                     waitMs(2000),
+                     SetRamp.up(ramp),
+                     follow(robot.follower, path2()),
+                     Shoot.create(robot),
                      instant(intake::stop),
 
+                     follow(robot.follower, path3())
 
-                    parallel(
-                            sequential(
-                                    waitMs(200),
-                                    SetRamp.up(ramp)
-                            ),
-                            follow(robot.follower, SHOOT())
-                    ),
-
-                    Shoot.create(robot),
-
-                    follow(robot.follower, PARK())
             ),
             SpinFlywheel.create(flywheel)
         );
     }
 
-    private Path FLOWER(){
-        return curve(m(FAR_START), m(FAR_FLOWERCURVE), m(FAR_FLOWER)).linear(m(FAR_START), m(FAR_FLOWER));
+    public Path path1() {
+        return Paths.curve(start, path1Control1, path1).constant(path1);
     }
 
-    private Path ATFLOWER(){
-        return line(m(FAR_FLOWER), m(FAR_ATFLOWER)).linear(m(FAR_FLOWER), m(FAR_ATFLOWER));
+    public Path path2() {
+        return Paths.curve(path1, point2Control1, point2).constant(point2);
     }
 
-    private Path SHOOT(){
-        return curve(m(FAR_FLOWER), m(FAR_SHOOTCURVE), m(FAR_SHOOT)).linear(m(FAR_FLOWER), m(FAR_SHOOT));
-    }
-    private Path PARK(){
+    public Path path3() {
         if (AutoConfig.parkTop) {
-            return curve(m(FAR_SHOOT), m(FAR_PARKCURVE), m(FAR_PARKTOP)).linear(m(FAR_SHOOT), m(FAR_PARKTOP));
+            return Paths.curve(point2, point3Control1, point3Top).linear(point2, point3Top);
         }
-        return curve(m(FAR_SHOOT), m(FAR_PARKCURVE), m(FAR_PARKBOTTOM)).linear(m(FAR_SHOOT), m(FAR_PARKBOTTOM));
+        return curve(m(point2), m(point3Control1), m(point3Bottom)).linear(m(point2), m(point3Bottom));
     }
+
 }

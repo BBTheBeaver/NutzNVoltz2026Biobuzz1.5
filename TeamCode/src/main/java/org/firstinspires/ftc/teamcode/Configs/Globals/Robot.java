@@ -30,10 +30,12 @@ public class Robot {
     public final DcMotor intake;
     //public final CRServo leftIntakeServo;
     //public final CRServo rightIntakeServo;
-    public final CRServo windmillServo;
+    public final DcMotor transfer;
 
     public final Servo right_flower;
     public final Servo left_flower;
+
+    public final Servo gate;
 
 
 
@@ -62,12 +64,13 @@ public class Robot {
         // ----- Non-drivetrain hardware init -----
         intake = hw.get(DcMotor.class, "intake");
         launcher = hw.get(DcMotorEx.class, "launcher");
-        windmillServo = hw.get(CRServo.class, "windmillServo");
+        transfer = hw.get(DcMotor.class, "transfer");
         //leftIntakeServo = hw.get(CRServo.class, "left_intake_servo");
         //rightIntakeServo = hw.get(CRServo.class, "right_intake_servo");
 
         right_flower = hw.get(Servo.class, "right_flower");
         left_flower = hw.get(Servo.class, "left_flower");
+        gate = hw.get(Servo.class, "gate");
 
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -77,7 +80,6 @@ public class Robot {
 
         //leftIntakeServo.setPower(0);
         //rightIntakeServo.setPower(0);
-        windmillServo.setPower(0);
 
         left_flower.setDirection(Servo.Direction.REVERSE);
 
@@ -85,6 +87,7 @@ public class Robot {
 
         right_flower.setPosition(FLOWER_RAMP_UP);
         left_flower.setPosition(FLOWER_RAMP_UP);
+        gate.setPosition(GATE_CLOSE);
 
         //rightIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);
         //leftIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);

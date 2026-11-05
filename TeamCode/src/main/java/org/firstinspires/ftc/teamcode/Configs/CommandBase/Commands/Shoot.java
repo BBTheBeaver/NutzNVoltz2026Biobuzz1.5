@@ -16,63 +16,18 @@ public class Shoot {
     public static Command create(Robot robot) {
         return sequential(
                 instant(() -> {
-                    robot.windmillServo.setPower(1);
+                    robot.transfer.setPower(1);
+                    robot.gate.setPosition(1);
+                    robot.intake.setPower(1);
                 }),
 
-                waitMs(350),
+                waitMs(1000),
 
                 instant(() -> {
-                    robot.windmillServo.setPower(0);
                     robot.intake.setPower(0);
-                }),
-
-                waitMs(350),
-                instant(() -> {
-                    robot.windmillServo.setPower(1);
-                }),
-                waitMs(350),
-
-                instant(() -> {
-                    robot.windmillServo.setPower(0);
-                    robot.intake.setPower(0);
-                }),
-
-                waitMs(350),
-                instant(() -> {
-                    robot.windmillServo.setPower(1);
-                }),
-
-                waitMs(350),
-
-                instant(() -> {
-                    robot.windmillServo.setPower(0);
-                    robot.intake.setPower(0);
-                }),
-
-                waitMs(350),
-                instant(() -> {
-                    robot.windmillServo.setPower(1);
-                }),
-
-                waitMs(350),
-
-                instant(() -> {
-                    robot.windmillServo.setPower(0);
-                    robot.intake.setPower(0);
-                }),
-
-                waitMs(350),
-                instant(() -> {
-                    robot.windmillServo.setPower(1);
-                }),
-
-                waitMs(350),
-
-                instant(() -> {
-                    robot.windmillServo.setPower(0);
-                    robot.intake.setPower(0);
+                    robot.transfer.setPower(0);
+                    robot.gate.setPosition(0);
                 })
-
         );
     }
 }
