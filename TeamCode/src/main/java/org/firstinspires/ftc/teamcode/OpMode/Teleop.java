@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
+import com.pedropathing.api.PoseFactory;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
@@ -42,6 +44,10 @@ public class Teleop extends OpMode {
     int selectedOption = 0;
     boolean upLast = false;
     boolean downLast = false;
+
+    private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+
+
 
 
 
@@ -85,6 +91,12 @@ public class Teleop extends OpMode {
         }
 
     }
+    private Pose m(Pose pose) {
+        if (isBlue) {
+            return mirroredFactory.of(pose.x(), pose.y(), pose.heading());
+        }
+        return pose;
+    }
 
     @Override
     public void loop() {
@@ -94,12 +106,13 @@ public class Teleop extends OpMode {
         robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
 
         if(gamepad2.dpad_down){
-            if(isBlue){
-                robot.follower.setPose(BLUE_RESET);
-            }
-            else{
-                robot.follower.setPose(RED_RESET);
-            }
+            robot.follower.setPose(m(RESET_GARDEN));
+        }
+        if(gamepad2.dpad_up){
+            robot.follower.setPose(m(RESET_TOP));
+        }
+        if(gamepad2.dpad_left|| gamepad1.dpad_right){
+            robot.follower.setPose(m(RESET_FLOWER));
         }
 
 
@@ -216,6 +229,10 @@ public class Teleop extends OpMode {
         telemetry.addData("Heading Error (deg)", Math.toDegrees(headingError));
         telemetry.addData("Heading", "%.1f°", Math.toDegrees(robot.follower.pose().heading()));
         telemetry.addData("Loop Hz", robot.getLoopTimeHz());
+        telemetry.addLine("Dpad_Down for garden reset");
+        telemetry.addLine("Dpad_Up for top reset");
+        telemetry.addLine("Dpad_left or Dpad_right for flower reset");
+
         telemetry.update();
     }
 

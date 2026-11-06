@@ -24,8 +24,9 @@ public class Constants {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
     //Pose reset
-    public static final Pose BLUE_RESET = poseFactory.of(132, 132, 270);
-    public static final Pose RED_RESET = poseFactory.of(10, 10, 90);
+    public static final Pose RESET_GARDEN = poseFactory.of(10, 10, 90);
+    public static final Pose RESET_FLOWER = poseFactory.of(8.9151, 34.6079, 0);
+    public static final Pose RESET_TOP = poseFactory.of(9.7734, 132.3336, 270);
 
     public static double OTHERSIDE;
 
