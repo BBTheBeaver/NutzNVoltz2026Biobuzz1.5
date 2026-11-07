@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Configs.Globals;
 
 
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.FLOWER_RAMP_UP;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_CLOSE;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.utils.Timer;
@@ -76,7 +77,7 @@ public class Robot {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(52.6, 0, 0, 11.3));
 
         //leftIntakeServo.setPower(0);
         //rightIntakeServo.setPower(0);
