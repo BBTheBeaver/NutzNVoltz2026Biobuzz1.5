@@ -22,7 +22,6 @@ import java.util.Objects;
 public class Teleop extends OpMode {
     Robot robot;
 
-    boolean otherSide = false;
     double headingError   = 0;
     double distanceToGoal = 0;
     boolean  headingLock    = false;
