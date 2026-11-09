@@ -1,4 +1,19 @@
+/*buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        maven {
+            url "https://repo.dairy.foundation/releases"
+        }
+    }
+    dependencies {
+        classpath "dev.frozenmilk:Load:0.3.2"
+    }
+}*/
+
+// there should be 2 or 3 more lines that start with 'apply plugin:' here
 apply plugin: 'com.android.application'
+//apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 
 //
 // build.gradle in TeamCode
@@ -11,6 +26,8 @@ apply plugin: 'com.android.application'
 // before doing so.
 
 // Custom definitions may go here
+
+
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
@@ -26,6 +43,7 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+
 }
 
 
@@ -37,6 +55,9 @@ dependencies {
 // Sloth's Load plugin, which enables hot reloading code onto the robot without a full
 // reinstall. The plugin version must match the dev.frozenmilk.sinister:Sloth library version
 // declared in build.dependencies.gradle.
+
+
+
 /*buildscript {
     repositories {
         mavenCentral()

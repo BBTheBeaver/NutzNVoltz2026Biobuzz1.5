@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpMode.Tunning;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
+
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @TeleOp(name = "ShooterTuner", group = "StarterBot")
 public class ShooterTunner extends OpMode {
-    int Shooter_speed = 1000;
+    int Shooter_speed = 1230;
     Robot robot;
 
     @Override
@@ -37,7 +37,12 @@ public class ShooterTunner extends OpMode {
         robot.intake.setPower(1);
 
         if(gamepad1.y){
-            robot.windmillServo.setPower(1);
+            robot.transfer.setPower(1);
+            robot.gate.setPosition(GATE_OPEN);
+        }
+        else{
+            robot.transfer.setPower(0);
+            robot.gate.setPosition(GATE_CLOSE);
         }
 
 
@@ -55,5 +60,7 @@ public class ShooterTunner extends OpMode {
         }
 
         telemetry.addData("Speed", Shooter_speed);
+        telemetry.addLine("Dpad up/down for increments of 100");
+        telemetry.addLine("Dpad x/b for increments of 10");
     }
 }

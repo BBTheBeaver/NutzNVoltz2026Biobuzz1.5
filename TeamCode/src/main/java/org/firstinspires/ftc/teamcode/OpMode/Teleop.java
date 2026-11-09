@@ -179,6 +179,7 @@ public class Teleop extends OpMode {
 
         if (intakeOn) {
             robot.intake.setPower(INTAKE_FORWARD);
+            robot.transfer.setPower(1);
             //robot.leftIntakeServo.setPower(INTAKE_FORWARD);
             //robot.rightIntakeServo.setPower(INTAKE_FORWARD);
         } else if (reverseOn) {
@@ -217,7 +218,7 @@ public class Teleop extends OpMode {
             robot.intake.setPower(INTAKE_FORWARD);
         } else {
             robot.transfer.setPower(0);
-            robot.gate.setPosition(1);
+            robot.gate.setPosition(0);
         }
 
         // Telemetry
