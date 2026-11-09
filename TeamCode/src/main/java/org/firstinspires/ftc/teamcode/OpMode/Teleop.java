@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpMode;
+import static com.pedropathing.utils.Utils.clamp;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 import com.pedropathing.api.PoseFactory;
@@ -21,14 +22,16 @@ import java.util.Objects;
 public class Teleop extends OpMode {
     Robot robot;
 
-    boolean otherSide = false;
     double headingError   = 0;
     double distanceToGoal = 0;
     boolean  headingLock    = false;
     double[] goalPose = GOAL_POSE_BLUE;
 
-    private final PIDController headingController =
-            new PIDController(2.5, 0.0, 0.1);
+    double holdX, holdY;
+
+    private final PIDController headingController = new PIDController(2.5, 0.0, 0.1);
+    private final PIDController holdXController = new PIDController(0.08, 0.0, 0.01);
+    private final PIDController holdYController = new PIDController(0.08, 0.0, 0.01);
 
     boolean intakeOn = false;
     boolean reverseOn = false;
@@ -45,7 +48,10 @@ public class Teleop extends OpMode {
     boolean upLast = false;
     boolean downLast = false;
 
+    boolean positionHold = false;
+
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+
 
 
 
@@ -149,17 +155,44 @@ public class Teleop extends OpMode {
             turnPower = gamepad1.right_stick_x;
                     //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
         }
-
+        // Position hold toggle (X)
         double flip = isBlue ? 1 : -1;
 
-        // Field-centric drive
+        double driveY = flip * gamepad1.left_stick_y;
+        double driveX = flip * gamepad1.left_stick_x;
+        boolean driverMoving = Math.abs(gamepad1.left_stick_x) > 0.05
+                || Math.abs(gamepad1.left_stick_y) > 0.05;
+
+        // Toggle position hold (X)
+        if (gamepad1.xWasPressed()) {
+            positionHold = !positionHold;
+            holdX = robot.follower.pose().x();
+            holdY = robot.follower.pose().y();
+        }
+
+        if (positionHold) {
+            if (driverMoving) {
+                // driving: keep moving the target with the robot
+                holdX = robot.follower.pose().x();
+                holdY = robot.follower.pose().y();
+            } else {
+                // idle: push back toward the saved spot
+                double errX = holdX - robot.follower.pose().x();
+                double errY = holdY - robot.follower.pose().y();
+
+                driveY += clamp(holdYController.calculate(0, errY), 0.5);
+                driveX += clamp(holdXController.calculate(0, errX), 0.5);
+            }
+        }
+
         DrivePowers powers = ManualDrive.fieldCentric(
-                flip * gamepad1.left_stick_y,
-                flip * gamepad1.left_stick_x,
+                driveY,
+                driveX,
                 turnPower,
                 robot.follower.pose().heading()
         );
         robot.follower.manual(powers);
+
 
 
         // Intake toggle
@@ -179,7 +212,7 @@ public class Teleop extends OpMode {
 
         if (intakeOn) {
             robot.intake.setPower(INTAKE_FORWARD);
-            robot.transfer.setPower(1);
+            robot.transfer.setPower(INTAKE_FORWARD);
             //robot.leftIntakeServo.setPower(INTAKE_FORWARD);
             //robot.rightIntakeServo.setPower(INTAKE_FORWARD);
         } else if (reverseOn) {
@@ -214,11 +247,11 @@ public class Teleop extends OpMode {
 
         if (gamepad1.y) {
             robot.transfer.setPower(1);
-            robot.gate.setPosition(1);
+            robot.gate.setPosition(GATE_OPEN);
             robot.intake.setPower(INTAKE_FORWARD);
         } else {
             robot.transfer.setPower(0);
-            robot.gate.setPosition(0);
+            robot.gate.setPosition(GATE_CLOSE);
         }
 
         // Telemetry
@@ -226,6 +259,7 @@ public class Teleop extends OpMode {
         telemetry.addData("Distance from goal: ", distanceToGoal);
         telemetry.addData("X Pose: ", robot.follower.pose().x());
         telemetry.addData("Y Pose: ", robot.follower.pose().y());
+        telemetry.addData("Position Hold", positionHold);
         telemetry.addData("Triggers", "left (%.2f), right (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
         telemetry.addData("Heading Error (deg)", Math.toDegrees(headingError));
         telemetry.addData("Heading", "%.1f°", Math.toDegrees(robot.follower.pose().heading()));
@@ -239,5 +273,9 @@ public class Teleop extends OpMode {
 
     private static double normalizeAngle(double angle) {
         return Math.atan2(Math.sin(angle), Math.cos(angle));
+    }
+
+    private static double clamp(double v, double max) {
+        return Math.max(-max, Math.min(max, v));
     }
 }
