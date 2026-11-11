@@ -30,14 +30,14 @@ public class SoloAuto implements AutoRoutine{
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(61.5178, 8, 270);
-    private final Pose path1 = poseFactory.of(13.3653, 46.747, 180);
-    private final Pose path1Control1 = poseFactory.of(34.2421, 51.0813, 0);
-    private final Pose point2Start = poseFactory.of(13.3653, 46.747, 180);
+    private final Pose start = poseFactory.of(56.097, 8, 270);
+    private final Pose path1 = poseFactory.of(20, 46.747, 180);
+    private final Pose point1_5 = poseFactory.of(15, 46.75, 180);
+    private final Pose point2Start = poseFactory.of(17, 46.75, 180);
     private final Pose point2 = poseFactory.of(61.2836, 132.4523, 90);
     private final Pose point2Control1 = poseFactory.of(13.7852, 68.8159, 0);
     private final Pose point2Control2 = poseFactory.of(26.6902, 90.2806, 0);
-    private final Pose point3 = poseFactory.of(47.0991, 128.9614, 90);
+    private final Pose point3 = poseFactory.of(44, 128, 90);
     private final Pose point3Control1 = poseFactory.of(58.51, 115.7, 0);
     private final Pose point4 = poseFactory.of(61.28, 132.45, 90);
     private final Pose point4Control1 = poseFactory.of(58.5, 115.7, 0);
@@ -69,30 +69,40 @@ public class SoloAuto implements AutoRoutine{
         Transfer transfer = new Transfer(robot.transfer);
         return deadline(
                 sequential(
-                        waitMs(500),
+                        waitMs(1000),
                         Shoot.create(robot),
 
                         parallel(
                                 instant(intake::on),
-                                follow(robot.follower, path1()),
-                                sequential(
-                                        waitMs(1850),
-                                        SetRamp.down(ramp)
-                                )
+                                follow(robot.follower, path1())
                         ),
 
-                        SetRamp.up(ramp),
-                        follow(robot.follower, path2()),
+                        SetRamp.down(ramp),
+                        parallel(
+                                instant(intake::on),
+                                follow(robot.follower, path1_5())
+                        ),
+                        waitMs(3000),
+
+                        parallel(
+                                follow(robot.follower, path2()),
+                                sequential(
+                                        waitMs(250),
+                                        SetRamp.up(ramp)
+                                )
+                        ),
                         Shoot.create(robot),
 
                         parallel(
                                 instant(intake::on),
                                 follow(robot.follower, path3()),
                                 sequential(
-                                        waitMs(1000),
+                                        waitMs(100),
                                         SetRamp.down(ramp)
                                 )
                         ),
+
+                        waitMs(3000),
 
                         SetRamp.up(ramp),
                         follow(robot.follower, path4()),
@@ -107,7 +117,11 @@ public class SoloAuto implements AutoRoutine{
     }
 
     public Path path1() {
-        return Paths.curve(m(start), m(path1Control1), m(path1)).linear(m(start), m(path1));
+        return Paths.line(m(start), m(path1)).linear(m(start), m(path1));
+    }
+
+    public Path path1_5() {
+        return Paths.line(path1, point1_5).constant(point1_5);
     }
 
     public Path path2() {

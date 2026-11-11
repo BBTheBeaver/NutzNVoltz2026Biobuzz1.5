@@ -33,7 +33,7 @@ public class FarAuto implements AutoRoutine{
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(61.1499, 132.4562, 90);
-    private final Pose path1 = poseFactory.of(47.049, 128.9437, 90);
+    private final Pose path1 = poseFactory.of(47.049, 125, 90);
     private final Pose path1Control1 = poseFactory.of(54.0127, 120.6964, 0);
     private final Pose point2 = poseFactory.of(61, 132.5, 90);
     private final Pose point2Control1 = poseFactory.of(54.01, 120.7, 0);
@@ -75,6 +75,8 @@ public class FarAuto implements AutoRoutine{
                                      SetRamp.down(ramp)
                              )
                      ),
+
+                     waitMs(2000),
 
                      SetRamp.up(ramp),
                      follow(robot.follower, path2()),

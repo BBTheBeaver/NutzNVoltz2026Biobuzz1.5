@@ -15,8 +15,8 @@ public class Constants {
     public static double[] GOAL_POSE_BLUE = {84.0,  47.0};//-50 For the other side
     public static double[] GOAL_POSE_RED  = {58.0, 47.0};//-50 for the other side
 
-    public static final double FLOWER_RAMP_UP = 90/300.0;
-    public static final double FLOWER_RAMP_DOWN = 0/300.0;
+    public static final double FLOWER_RAMP_UP = 0;
+    public static final double FLOWER_RAMP_DOWN = 1;
 
     public static final double GATE_OPEN = 1;
     public static final double GATE_CLOSE = 0;
