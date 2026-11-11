@@ -33,13 +33,14 @@ public class FarAuto implements AutoRoutine{
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(61.1499, 132.4562, 90);
-    private final Pose path1 = poseFactory.of(47.049, 128.9437, 90);
-    private final Pose path1Control1 = poseFactory.of(54.0127, 120.6964, 0);
-    private final Pose point2 = poseFactory.of(61, 132.5, 90);
-    private final Pose point2Control1 = poseFactory.of(54.01, 120.7, 0);
-    private final Pose point3Top = poseFactory.of(12.425, 122.4423, 180);
-    private final Pose point3Bottom = poseFactory.of(12.425, 90, 180);
-    private final Pose point3Control1 = poseFactory.of(70.8566, 119.4897, 0);
+    private final Pose path1 = poseFactory.of(46.3133, 114.3523, 90);
+    private final Pose point2 = poseFactory.of(46.31, 127, 90);
+    private final Pose point3 = poseFactory.of(61, 132.5, 90);
+    private final Pose point3Control1 = poseFactory.of(54.01, 120.7, 0);
+    private final Pose point4Start = poseFactory.of(61, 132.5, 90);
+    private final Pose point4Top = poseFactory.of(12.425, 122.4423, 180);
+    private final Pose point4Bottom = poseFactory.of(12.425, 91, 180);
+    private final Pose point4Control1 = poseFactory.of(70.8566, 119.4897, 0);
 
     private final boolean blue;
     public FarAuto(boolean blue) {
@@ -69,38 +70,49 @@ public class FarAuto implements AutoRoutine{
 
                      parallel(
                              instant(intake::on),
-                             follow(robot.follower, path1()),
+                             follow(robot.follower, path1())
+                     ),
+
+                     SetRamp.down(ramp),
+                     follow(robot.follower, path2()),
+
+                     parallel(
+                             follow(robot.follower, path3()),
                              sequential(
-                                     waitMs(500),
-                                     SetRamp.down(ramp)
+                                     waitMs(100),
+                                     SetRamp.up(ramp)
                              )
                      ),
 
-                     SetRamp.up(ramp),
-                     follow(robot.follower, path2()),
+
                      Shoot.create(robot),
                      instant(intake::stop),
 
-                     follow(robot.follower, path3())
+                     follow(robot.follower, path4())
 
             ),
             SpinFlywheel.create(flywheel)
         );
     }
 
+
     public Path path1() {
-        return Paths.curve(start, path1Control1, path1).constant(path1);
+        return Paths.line(start, path1).constant(path1);
     }
 
     public Path path2() {
-        return Paths.curve(path1, point2Control1, point2).constant(point2);
+        return Paths.line(path1, point2).constant(point2);
     }
 
     public Path path3() {
+        return Paths.curve(point2, point3Control1, point3).constant(point3);
+    }
+
+    public Path path4() {
         if (AutoConfig.parkTop) {
-            return Paths.curve(point2, point3Control1, point3Top).linear(point2, point3Top);
+            return Paths.curve(point4Start, point4Control1, point4Top).linear(point4Start, point4Top);
         }
-        return curve(m(point2), m(point3Control1), m(point3Bottom)).linear(m(point2), m(point3Bottom));
+        return curve(m(point4Start), m(point4Control1), m(point4Bottom)).linear(m(point4Start), m(point4Bottom));
     }
 
 }

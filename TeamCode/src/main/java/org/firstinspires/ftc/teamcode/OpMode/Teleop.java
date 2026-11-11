@@ -43,8 +43,7 @@ public class Teleop extends OpMode {
     boolean isBlue;
 
     private final ElapsedTime OverPossestionDelay = new ElapsedTime();
-    private static final double  OverPossestionDelayTime= 3
-            ; // how long to wait, tune this
+    private static final double  OverPossestionDelayTime= 3; // how long to wait, tune this
 
 
 
