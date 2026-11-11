@@ -85,8 +85,11 @@ public class SoloAuto implements AutoRoutine{
                         waitMs(2000),
 
                         parallel(
-                                SetRamp.up(ramp),
-                                follow(robot.follower, path2())
+                                follow(robot.follower, path2()),
+                                sequential(
+                                        waitMs(100),
+                                        SetRamp.up(ramp)
+                                )
                         ),
 
 
