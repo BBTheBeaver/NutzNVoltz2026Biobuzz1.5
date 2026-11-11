@@ -10,6 +10,7 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
@@ -40,6 +41,9 @@ public class Teleop extends OpMode {
     boolean right_flower = false;
 
     boolean isBlue;
+
+    private final ElapsedTime OverPossestionDelay = new ElapsedTime();
+    private static final double  OverPossestionDelayTime= 0.3; // how long to wait, tune this
 
 
 
@@ -109,7 +113,21 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
+        if (gamepad2.yWasPressed()) {
+            OverPossestionDelay.reset();                       // start the wait the moment Y is pressed
+        }
+
+        if (gamepad2.y) {
+            robot.launcher.setVelocity(100);
+
+            if (OverPossestionDelay.seconds() >= OverPossestionDelayTime) {
+                robot.transfer.setPower(1);       // replace with your motor
+                robot.gate.setPosition(1);        // replace with your servo
+            }
+        } else {
+            robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
+        }
+
 
         if(gamepad2.dpad_down){
             robot.follower.setPose(m(RESET_GARDEN));
@@ -128,22 +146,23 @@ public class Teleop extends OpMode {
             goalPose[1] = 47.0;
         }
 
-        // right after the goalPose[1] = 97 / 47 block, before the heading lock section
-        double dx = goalPose[0] - robot.follower.pose().x();
-        double dy = goalPose[1] - robot.follower.pose().y();
-        distanceToGoal = Math.hypot(dx, dy);
-
-        // ── RightBumper — toggle heading lock ──────────────────────────────────────
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
         double turnPower;
         if(headingLock) {
+            double dx;
+            double dy;
+
+            dx = goalPose[0] - robot.follower.pose().x();
+            dy = goalPose[1] - robot.follower.pose().y();
+
             double kV = -0.75; // start here, tune sign/magnitude by watching behavior while strafing
             double denom = dx * dx + dy * dy;
             double headingVelFF = denom > 1e-6
                     ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
                     : 0;
+            distanceToGoal = Math.hypot(dx, dy);
             headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
             headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
             if (Math.abs(headingError) < Math.toRadians(1)) {
@@ -153,41 +172,15 @@ public class Teleop extends OpMode {
             }
         }else {
             turnPower = gamepad1.right_stick_x;
-                    //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
+            //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
         }
-        // Position hold toggle (X)
+
         double flip = isBlue ? 1 : -1;
 
-        double driveY = flip * gamepad1.left_stick_y;
-        double driveX = flip * gamepad1.left_stick_x;
-        boolean driverMoving = Math.abs(gamepad1.left_stick_x) > 0.05
-                || Math.abs(gamepad1.left_stick_y) > 0.05;
-
-        // Toggle position hold (X)
-        if (gamepad1.xWasPressed()) {
-            positionHold = !positionHold;
-            holdX = robot.follower.pose().x();
-            holdY = robot.follower.pose().y();
-        }
-
-        if (positionHold) {
-            if (driverMoving) {
-                // driving: keep moving the target with the robot
-                holdX = robot.follower.pose().x();
-                holdY = robot.follower.pose().y();
-            } else {
-                // idle: push back toward the saved spot
-                double errX = holdX - robot.follower.pose().x();
-                double errY = holdY - robot.follower.pose().y();
-
-                driveY += clamp(holdYController.calculate(0, errY), 0.5);
-                driveX += clamp(holdXController.calculate(0, errX), 0.5);
-            }
-        }
-
+        // Field-centric drive
         DrivePowers powers = ManualDrive.fieldCentric(
-                driveY,
-                driveX,
+                flip * gamepad1.left_stick_y,
+                flip * gamepad1.left_stick_x,
                 turnPower,
                 robot.follower.pose().heading()
         );
