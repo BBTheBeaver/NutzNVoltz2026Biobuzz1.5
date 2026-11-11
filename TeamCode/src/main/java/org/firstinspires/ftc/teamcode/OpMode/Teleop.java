@@ -10,6 +10,7 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
@@ -40,6 +41,9 @@ public class Teleop extends OpMode {
     boolean right_flower = false;
 
     boolean isBlue;
+
+    private final ElapsedTime OverPossestionDelay = new ElapsedTime();
+    private static final double  OverPossestionDelayTime= 3; // how long to wait, tune this
 
 
 
@@ -109,7 +113,21 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
+        if (gamepad2.yWasPressed()) {
+            OverPossestionDelay.reset();                       // start the wait the moment Y is pressed
+        }
+
+        if (gamepad2.y) {
+            robot.launcher.setVelocity(100);
+
+            if (OverPossestionDelay.seconds() >= OverPossestionDelayTime) {
+                robot.transfer.setPower(1);       // replace with your motor
+                robot.gate.setPosition(1);        // replace with your servo
+            }
+        } else {
+            robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
+        }
+
 
         if(gamepad2.dpad_down){
             robot.follower.setPose(m(RESET_GARDEN));
@@ -128,7 +146,6 @@ public class Teleop extends OpMode {
             goalPose[1] = 47.0;
         }
 
-        // ── RightBumper — toggle heading lock ──────────────────────────────────────
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
