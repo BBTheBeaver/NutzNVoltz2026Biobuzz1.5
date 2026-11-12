@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpMode.Tunning;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_CLOSE;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_OPEN;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,11 +14,11 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 @TeleOp(name = "PIDF Tuner", group = "Tuning")
 public class PIDF extends OpMode {
-
     private Robot robot;
     private DcMotorEx launcher;   // change if your launcher field has a different type/name
 
     // Start with everything off except a rough F
+
     private double p = 0, i = 0, d = 0, f = 11.30;
     private double targetVelocity = 1230; // ticks/sec
     private boolean running = false;

@@ -30,7 +30,7 @@ public class SoloAuto implements AutoRoutine{
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(61.5178, 8.9809, 270);
+    private final Pose start = poseFactory.of(56.097, 8.9809, 270);
     private final Pose path1 = poseFactory.of(23, 46.747, 180);
     private final Pose point2 = poseFactory.of(14, 46.75, 180);
     private final Pose point3Start = poseFactory.of(14, 46.75, 180);
@@ -78,14 +78,15 @@ public class SoloAuto implements AutoRoutine{
                         ),
 
                         SetRamp.down(ramp),
+                        waitMs(1000),
                         parallel(
                                 instant(intake::on),
                                 follow(robot.follower, path2())
                         ),
-                        waitMs(2000),
+                        waitMs(3000),
 
                         parallel(
-                                follow(robot.follower, path2()),
+                                follow(robot.follower, path3()),
                                 sequential(
                                         waitMs(100),
                                         SetRamp.up(ramp)
@@ -97,22 +98,26 @@ public class SoloAuto implements AutoRoutine{
 
                         parallel(
                                 instant(intake::on),
-                                follow(robot.follower, path3()),
+                                follow(robot.follower, path4()),
                                 sequential(
-                                        waitMs(750),
+                                        waitMs(50),
                                         SetRamp.down(ramp)
                                 )
                         ),
+                        waitMs(3000),
 
                        parallel(
-                            SetRamp.up(ramp),
-                            follow(robot.follower, path4())
+                               sequential(
+                                       waitMs(100),
+                                       SetRamp.up(ramp)
+                               ),
+                            follow(robot.follower, path5())
                        ),
 
                         Shoot.create(robot),
                         instant(intake::stop),
 
-                        follow(robot.follower, path5())
+                        follow(robot.follower, path6())
 
                 ),
                 SpinFlywheel.create(flywheel)

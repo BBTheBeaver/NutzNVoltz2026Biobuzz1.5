@@ -43,7 +43,7 @@ public class Teleop extends OpMode {
     boolean isBlue;
 
     private final ElapsedTime OverPossestionDelay = new ElapsedTime();
-    private static final double  OverPossestionDelayTime= 3; // how long to wait, tune this
+    private static final double  OverPossestionDelayTime=0.5; // how long to wait, tune this
 
 
 
@@ -118,11 +118,11 @@ public class Teleop extends OpMode {
         }
 
         if (gamepad2.y) {
-            robot.launcher.setVelocity(100);
+            robot.launcher.setVelocity(500);
 
             if (OverPossestionDelay.seconds() >= OverPossestionDelayTime) {
                 robot.transfer.setPower(1);       // replace with your motor
-                robot.gate.setPosition(1);        // replace with your servo
+                robot.gate.setPosition(GATE_OPEN);        // replace with your servo
             }
         } else {
             robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
