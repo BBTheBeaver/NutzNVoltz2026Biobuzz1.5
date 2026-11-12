@@ -36,7 +36,7 @@ public class FarAuto implements AutoRoutine{
     private final Pose path1 = poseFactory.of(46.3133, 114.3523, 90);
     private final Pose point2 = poseFactory.of(46.31, 127, 90);
     private final Pose point3 = poseFactory.of(61, 132.5, 90);
-    private final Pose point3Control1 = poseFactory.of(54.01, 120.7, 0);
+    private final Pose point3Control1 = poseFactory.of(52.3277, 104.8116, 0);
     private final Pose point4Start = poseFactory.of(61, 132.5, 90);
     private final Pose point4Top = poseFactory.of(12.425, 122.4423, 180);
     private final Pose point4Bottom = poseFactory.of(12.425, 91, 180);
@@ -74,7 +74,9 @@ public class FarAuto implements AutoRoutine{
                      ),
 
                      SetRamp.down(ramp),
+                     waitMs(500),
                      follow(robot.follower, path2()),
+                     waitMs(3000),
 
                      parallel(
                              follow(robot.follower, path3()),

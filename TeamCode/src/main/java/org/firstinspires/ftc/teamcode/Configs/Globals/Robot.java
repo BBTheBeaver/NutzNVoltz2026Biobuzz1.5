@@ -77,7 +77,7 @@ public class Robot {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(52.6, 0, 0, 11.3));
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(52.6, 0, 0, 11.7));
 
         //leftIntakeServo.setPower(0);
         //rightIntakeServo.setPower(0);

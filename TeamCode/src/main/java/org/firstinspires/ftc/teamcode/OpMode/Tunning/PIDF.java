@@ -1,20 +1,25 @@
 package org.firstinspires.ftc.teamcode.OpMode.Tunning;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_CLOSE;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_OPEN;
+
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
-@TeleOp
+@TeleOp(name = "PIDF Tuner", group = "Tuning")
 public class PIDF extends OpMode {
-
     private Robot robot;
     private DcMotorEx launcher;   // change if your launcher field has a different type/name
 
     // Start with everything off except a rough F
-    private double p = 0, i = 0, d = 0, f = 0;
+
+    private double p = 0, i = 0, d = 0, f = 11.30;
     private double targetVelocity = 1230; // ticks/sec
     private boolean running = false;
 
@@ -59,6 +64,18 @@ public class PIDF extends OpMode {
 
     @Override
     public void loop() {
+
+        if(gamepad1.y){
+            robot.transfer.setPower(1);
+            robot.intake.setPower(1);
+            robot.gate.setPosition(GATE_OPEN);
+        }
+        else{
+            robot.transfer.setPower(0);
+            robot.intake.setPower(0);
+            robot.gate.setPosition(GATE_CLOSE);
+        }
+
         // Select which value to edit
         if (gamepad1.dpadRightWasPressed()) selected = (selected + 1) % names.length;
         if (gamepad1.dpadLeftWasPressed())  selected = (selected - 1 + names.length) % names.length;
@@ -72,7 +89,7 @@ public class PIDF extends OpMode {
         if (gamepad1.rightBumperWasPressed()) step = Math.min(100, step * 10.0);
 
         // Target velocity
-        if (gamepad1.yWasPressed()) targetVelocity += 100;
+        if (gamepad1.bWasPressed()) targetVelocity += 100;
         if (gamepad1.xWasPressed()) targetVelocity = Math.max(0, targetVelocity - 100);
 
         // Start / stop
@@ -110,5 +127,4 @@ public class PIDF extends OpMode {
     public void stop() {
         if (launcher != null) launcher.setPower(0);
     }
-
 }

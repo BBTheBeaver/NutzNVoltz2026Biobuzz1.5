@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.Configs.Globals;
 public class ShooterTable {
 
     // distances in inches, must be sorted smallest to largest
-    private static final double[] DIST  = { 35,  42};
+    private static final double[] DIST  = { 31,   42.7 };
 
     // launcher velocity (ticks/sec) that works at each distance above
-    private static final double[] SPEED = { 1230, 1290 };
+    private static final double[] SPEED = {  1230, 1290 };
 
     public static double speedFor(double d) {
         if (d <= DIST[0]) return SPEED[0];

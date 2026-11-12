@@ -14,7 +14,7 @@ public class Flywheel {
 
     // Spins up the flywheel
     public void spinUp() {
-        motor.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        motor.setVelocity(1230);
     }
 
     // Checks whether the flywheel is ready to shoo
