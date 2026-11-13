@@ -30,21 +30,24 @@ public class SoloAuto implements AutoRoutine{
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(56.097, 8.9809, 270);
-    private final Pose path1 = poseFactory.of(23, 46.747, 180);
-    private final Pose point2 = poseFactory.of(14, 46.75, 180);
-    private final Pose point3Start = poseFactory.of(14, 46.75, 180);
+    private final Pose start = poseFactory.of(55.9101, 9.1679, 270);
+    private final Pose path1 = poseFactory.of(30, 46.747, 180);
+    private final Pose point2 = poseFactory.of(12.5, 46.75, 180);
+    private final Pose point3Start = poseFactory.of(13, 46.75, 180);
     private final Pose point3 = poseFactory.of(61.2836, 132.4523, 90);
     private final Pose point3Control1 = poseFactory.of(43.2133, 44.783, 0);
-    private final Pose point3Control2 = poseFactory.of(2.1668, 77.8963, 0);
-    private final Pose point4 = poseFactory.of(47.0991, 128.9614, 90);
+    private final Pose point3Control2 = poseFactory.of(2.2071, 55.7027, 0);
+    private final Pose point3Control3 = poseFactory.of(10.1468, 114.2296, 0);
+    private final Pose point3Control4 = poseFactory.of(61.4295, 111.8494, 0);
+    private final Pose point4 = poseFactory.of(46.5, 115, 90);
     private final Pose point4Control1 = poseFactory.of(58.51, 115.7, 0);
-    private final Pose point5 = poseFactory.of(61.28, 132.45, 90);
-    private final Pose point5Control1 = poseFactory.of(58.5, 115.7, 0);
-    private final Pose point6Start = poseFactory.of(61.28, 132.45, 90);
-    private final Pose point6Top = poseFactory.of(11.7906, 121.9295, 180);
-    private final Pose point6Bottom = poseFactory.of(11.7906, 90, 180);
-    private final Pose point6Control1 = poseFactory.of(65.1446, 116.9032, 0);
+    private final Pose point5 = poseFactory.of(46.5, 128.1, 90);
+    private final Pose point6 = poseFactory.of(61.28, 132, 90);
+    private final Pose point6Control1 = poseFactory.of(52.2465, 100.2503, 0);
+    private final Pose point7Start = poseFactory.of(61.28, 132, 90);
+    private final Pose point7Top = poseFactory.of(11.7906, 121.9295, 180);
+    private final Pose point7Bottom = poseFactory.of(11.7906, 90, 180);
+    private final Pose point7Control1 = poseFactory.of(65.1446, 116.9032, 0);
 
     private final boolean blue;
     public SoloAuto(boolean blue) {
@@ -72,10 +75,7 @@ public class SoloAuto implements AutoRoutine{
                         waitMs(1000),
                         Shoot.create(robot),
 
-                        parallel(
-                                instant(intake::on),
-                                follow(robot.follower, path1())
-                        ),
+                        follow(robot.follower, path1()),
 
                         SetRamp.down(ramp),
                         waitMs(1000),
@@ -89,7 +89,9 @@ public class SoloAuto implements AutoRoutine{
                                 follow(robot.follower, path3()),
                                 sequential(
                                         waitMs(100),
-                                        SetRamp.up(ramp)
+                                        SetRamp.up(ramp),
+                                        waitMs(500),
+                                        instant(intake::stop)
                                 )
                         ),
 
@@ -98,26 +100,29 @@ public class SoloAuto implements AutoRoutine{
 
                         parallel(
                                 instant(intake::on),
-                                follow(robot.follower, path4()),
-                                sequential(
-                                        waitMs(50),
-                                        SetRamp.down(ramp)
-                                )
+                                follow(robot.follower, path4())
+
                         ),
-                        waitMs(3000),
+
+                        SetRamp.down(ramp),
+                        waitMs(1000),
+                        parallel(
+                                follow(robot.follower, path5())
+                        ),
+                       waitMs(3000),
 
                        parallel(
                                sequential(
                                        waitMs(100),
                                        SetRamp.up(ramp)
                                ),
-                            follow(robot.follower, path5())
+                            follow(robot.follower, path6())
                        ),
 
                         Shoot.create(robot),
                         instant(intake::stop),
 
-                        follow(robot.follower, path6())
+                        follow(robot.follower, path7())
 
                 ),
                 SpinFlywheel.create(flywheel)
@@ -125,30 +130,34 @@ public class SoloAuto implements AutoRoutine{
     }
 
     public Path path1() {
-        return Paths.line(start, path1).linear(start, path1);
+        return Paths.line(m(start), m(path1)).linear(m(start), m(path1));
     }
 
     public Path path2() {
-        return Paths.line(path1, point2).constant(point2);
+        return Paths.line(m(path1), m(point2)).constant(m(point2));
     }
 
     public Path path3() {
-        return Paths.curve(point3Start, point3Control1, point3Control2, point3).linear(point3Start, point3);
+        return Paths.curve(m(point3Start), m(point3Control1), m(point3Control2), m(point3Control3), m(point3Control4), m(point3)).linear(m(point3Start), m(point3));
     }
 
     public Path path4() {
-        return Paths.curve(point3, point4Control1, point4).constant(point4);
+        return Paths.curve(m(point3), m(point4Control1), m(point4)).constant(m(point4));
     }
 
     public Path path5() {
-        return Paths.curve(point4, point5Control1, point5).constant(point5);
+        return Paths.line(m(point4), m(point5)).constant(m(point5));
     }
 
     public Path path6() {
+        return Paths.curve(m(point5), m(point6Control1), m(point6)).constant(m(point6));
+    }
+
+    public Path path7() {
         if (AutoConfig.parkTop) {
-            return Paths.curve(point6Start, point6Control1, point6Top).linear(point6Start, point6Top);
+            return Paths.curve(m(point7Start), m(point7Control1), m(point7Top)).linear(m(point7Start), m(point7Top));
         }
-        return curve(m(point6Start), m(point6Control1), m(point6Bottom)).linear(m(point6Start), m(point6Bottom));
+        return Paths.curve(m(point7Start), m(point6Control1), m(point7Bottom)).linear(m(point7Start), m(point7Bottom));
     }
 }
 
