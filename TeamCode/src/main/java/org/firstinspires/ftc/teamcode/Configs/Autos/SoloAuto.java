@@ -86,6 +86,7 @@ public class SoloAuto implements AutoRoutine{
                                 instant(intake::on),
                                 follow(robot.follower, path2())
                         ),
+
                         waitMs(3000),
 
                         parallel(
@@ -101,12 +102,13 @@ public class SoloAuto implements AutoRoutine{
 
                         parallel(
                                 instant(intake::on),
-                                follow(robot.follower, path4()),
-                                sequential(
-                                        waitMs(50),
-                                        SetRamp.down(ramp)
-                                )
+                                follow(robot.follower, path4())
                         ),
+
+                        SetRamp.down(ramp),
+                        waitMs(1000),
+                        follow(robot.follower, path5()),
+
                         waitMs(3000),
 
                        parallel(
@@ -114,13 +116,13 @@ public class SoloAuto implements AutoRoutine{
                                        waitMs(100),
                                        SetRamp.up(ramp)
                                ),
-                            follow(robot.follower, path5())
+                            follow(robot.follower, path6())
                        ),
 
                         Shoot.create(robot),
                         instant(intake::stop),
 
-                        follow(robot.follower, path6())
+                        follow(robot.follower, path7())
 
                 ),
                 SpinFlywheel.create(flywheel)

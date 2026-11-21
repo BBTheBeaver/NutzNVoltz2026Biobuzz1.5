@@ -42,6 +42,7 @@ public class Auto extends OpMode {
     private AutoRoutine selectedAuto;
 
     private final String[] parkOptions = {"Top", "Bottom"};
+    private int selectedPark = 1;
     private boolean parkTop = false; // false = bottom
 
     private AutoRoutine[] currentList() {
@@ -93,17 +94,17 @@ public class Auto extends OpMode {
                 break;
 
             case PARK:
-                if (down) parkTop = !parkTop;   // dpad down toggles, like alliance
+                if (down) selectedPark = (selectedPark + 1) % parkOptions.length;
+                if (up)   selectedPark = (selectedPark - 1 + parkOptions.length) % parkOptions.length;
                 if (a) stage = Stage.READY;
                 if (b) stage = Stage.AUTO;
                 telemetry.addLine("=== PARK SELECT ===");
                 telemetry.addData("Alliance", options[selectedOption_Alliance]);
                 telemetry.addData("Auto", selectedAuto.getClass().getSimpleName());
                 for (int i = 0; i < parkOptions.length; i++) {
-                    boolean isSelected = (i == 0) == parkTop;
-                    telemetry.addData(isSelected ? "> " : "  ", parkOptions[i]);
+                    telemetry.addData(i == selectedPark ? "> " : "  ", parkOptions[i]);
                 }
-                telemetry.addLine("DPAD down to switch, A to confirm, B to go back");
+                telemetry.addLine("DPAD up/down, A to confirm, B to go back");
                 break;
 
             case READY:

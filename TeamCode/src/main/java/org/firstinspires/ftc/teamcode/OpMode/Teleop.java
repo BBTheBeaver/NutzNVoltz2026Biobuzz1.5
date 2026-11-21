@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.OpMode;
-import static com.pedropathing.utils.Utils.clamp;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 import com.pedropathing.api.PoseFactory;
@@ -12,9 +11,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Aim;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
-import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterTable;
+import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterConstants;
 
 import java.util.Objects;
 
@@ -29,6 +29,8 @@ public class Teleop extends OpMode {
     double[] goalPose = GOAL_POSE_BLUE;
 
     double holdX, holdY;
+
+    double turnPower;
 
     private final PIDController headingController = new PIDController(2.5, 0.0, 0.1);
     private final PIDController holdXController = new PIDController(0.08, 0.0, 0.01);
@@ -56,7 +58,7 @@ public class Teleop extends OpMode {
 
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
 
-
+    Aim aim;
 
 
 
@@ -68,6 +70,7 @@ public class Teleop extends OpMode {
         robot = new Robot(hardwareMap);
         Scheduler.reset();
         telemetry.addData("Status", "Initialized");
+        aim = new Aim();
         //Driver 1: Intake, Heading lock, Drive
         //Driver 2: Shoot
     }
@@ -113,20 +116,7 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        if (gamepad2.yWasPressed()) {
-            OverPossestionDelay.reset();                       // start the wait the moment Y is pressed
-        }
-
-        if (gamepad2.y) {
-            robot.launcher.setVelocity(500);
-
-            if (OverPossestionDelay.seconds() >= OverPossestionDelayTime) {
-                robot.transfer.setPower(1);       // replace with your motor
-                robot.gate.setPosition(GATE_OPEN);        // replace with your servo
-            }
-        } else {
-            robot.launcher.setVelocity(ShooterTable.speedFor(distanceToGoal));
-        }
+        robot.launcher.setVelocity(ShooterConstants.flywheelSpeed(aim.getDistanceToGoal()));
 
 
         if(gamepad2.dpad_down){
@@ -146,38 +136,14 @@ public class Teleop extends OpMode {
             goalPose[1] = 47.0;
         }
 
+        //region Drive
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
-        double turnPower;
-        if(headingLock) {
-            double dx;
-            double dy;
 
-            dx = goalPose[0] - robot.follower.pose().x();
-            dy = goalPose[1] - robot.follower.pose().y();
-
-            double kV = -0.75; // start here, tune sign/magnitude by watching behavior while strafing
-            double denom = dx * dx + dy * dy;
-            double headingVelFF = denom > 1e-6
-                    ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
-                    : 0;
-            distanceToGoal = Math.hypot(dx, dy);
-            headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
-            headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
-            if (Math.abs(headingError) < Math.toRadians(1)) {
-                turnPower = 0;
-            } else {
-                turnPower = headingController.calculate(0, headingError) + kV * headingVelFF;
-            }
-        }else {
-            turnPower = gamepad1.right_stick_x;
-            //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
-        }
+        turnPower = aim.update(robot, headingLock, goalPose, gamepad1.right_stick_x);
 
         double flip = isBlue ? 1 : -1;
-
-        // Field-centric drive
         DrivePowers powers = ManualDrive.fieldCentric(
                 flip * gamepad1.left_stick_y,
                 flip * gamepad1.left_stick_x,
@@ -185,6 +151,7 @@ public class Teleop extends OpMode {
                 robot.follower.pose().heading()
         );
         robot.follower.manual(powers);
+        //endregion
 
 
 
