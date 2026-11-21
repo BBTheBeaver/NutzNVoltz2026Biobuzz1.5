@@ -74,7 +74,7 @@ public class FarAuto implements AutoRoutine{
                      ),
 
                      SetRamp.down(ramp),
-                     waitMs(500),
+                     waitMs(1000),
                      follow(robot.follower, path2()),
                      waitMs(3000),
 
@@ -99,22 +99,21 @@ public class FarAuto implements AutoRoutine{
 
 
     public Path path1() {
-        return Paths.line(start, path1).constant(path1);
+        return Paths.line(m(start), m(path1)).constant(m(path1));
     }
 
     public Path path2() {
-        return Paths.line(path1, point2).constant(point2);
+        return Paths.line(m(path1), m(point2)).constant(m(point2));
     }
 
     public Path path3() {
-        return Paths.curve(point2, point3Control1, point3).constant(point3);
+        return Paths.curve(m(point2), m(point3Control1), m(point3)).constant(m(point3));
     }
 
     public Path path4() {
         if (AutoConfig.parkTop) {
-            return Paths.curve(point4Start, point4Control1, point4Top).linear(point4Start, point4Top);
+            return Paths.curve(m(point4Start), m(point4Control1), m(point4Top)).linear(m(point4Start), m(point4Top));
         }
-        return curve(m(point4Start), m(point4Control1), m(point4Bottom)).linear(m(point4Start), m(point4Bottom));
+        return Paths.curve(m(point4Start), m(point4Control1), m(point4Bottom)).linear(m(point4Start), m(point4Bottom));
     }
-
 }

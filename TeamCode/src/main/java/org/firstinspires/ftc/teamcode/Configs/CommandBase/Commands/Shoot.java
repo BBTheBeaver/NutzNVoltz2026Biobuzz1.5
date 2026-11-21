@@ -16,12 +16,12 @@ public class Shoot {
     public static Command create(Robot robot) {
         return sequential(
                 instant(() -> {
-                    robot.transfer.setPower(0.5);
+                    robot.transfer.setPower(0.75);
                     robot.gate.setPosition(1);
                     robot.intake.setPower(1);
                 }),
 
-                waitMs(2250),
+                waitMs(2400),
 
                 instant(() -> {
                     robot.intake.setPower(0);
