@@ -30,7 +30,7 @@ apply plugin: 'com.android.application'
 
 
 // Include common definitions from above.
-apply from: '../build.common.gradle'
+/*apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 
 android {
@@ -44,7 +44,7 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
 
-}
+}*/
 
 
 // Sloth's Load plugin, which enables hot reloading code onto the robot without a full
@@ -58,7 +58,7 @@ dependencies {
 
 
 
-/*buildscript {
+buildscript {
     repositories {
         mavenCentral()
         google()
@@ -70,8 +70,6 @@ dependencies {
         classpath "dev.frozenmilk:Load:0.3.2"
     }
 }
-apply plugin: 'com.android.application'
-
 // Custom definitions may go here
 
 // Include common definitions from above.
@@ -90,4 +88,4 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
-}*/
+}
